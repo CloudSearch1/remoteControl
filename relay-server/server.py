@@ -118,6 +118,10 @@ async def handle_device_websocket(request):
                         client_ws = clients.get(device_to_client[device_id])
                         if client_ws:
                             await client_ws.send_json(data)
+                
+                # 心跳响应
+                elif action == 'ping':
+                    await ws.send_json({'action': 'pong'})
             
             elif msg.type == aiohttp.WSMsgType.ERROR:
                 logger.error(f"设备 {device_id} WebSocket 错误：{ws.exception()}")
