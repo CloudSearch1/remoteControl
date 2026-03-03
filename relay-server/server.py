@@ -65,7 +65,7 @@ device_to_client: Dict[str, str] = {}  # 设备 - 客户端映射
 
 async def handle_device_websocket(request):
     """处理设备 WebSocket 连接"""
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(heartbeat=30)  # 30 秒心跳
     await ws.prepare(request)
     
     device_id = None
@@ -144,7 +144,7 @@ async def handle_device_websocket(request):
 
 async def handle_client_websocket(request):
     """处理控制客户端 WebSocket 连接"""
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(heartbeat=30)  # 30 秒心跳
     await ws.prepare(request)
     
     client_id = None
