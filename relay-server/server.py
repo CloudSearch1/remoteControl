@@ -17,7 +17,6 @@ from typing import Dict, Optional
 
 from aiohttp import web
 import aiohttp
-from aiohttp import web_socket
 import base64
 
 # 尝试导入 Pillow
@@ -41,7 +40,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 HOST = os.getenv('HOST', '0.0.0.0')
-PORT = int(os.getenv('PORT', 8080))
+PORT = int(os.getenv('PORT', 8999))
 SERVER_PASSWORD = os.getenv('SERVER_PASSWORD', 'relay123')
 TIMEOUT = int(os.getenv('TIMEOUT', 300))
 

@@ -61,8 +61,8 @@ fi
 
 echo "[7/8] 配置防火墙..."
 if command -v ufw &> /dev/null; then
-    ufw allow 8080/tcp
-    echo "防火墙已配置，开放端口 8080"
+    ufw allow 8999/tcp
+    echo "防火墙已配置，开放端口 8999"
 else
     echo "未检测到 ufw，请手动配置防火墙"
 fi
