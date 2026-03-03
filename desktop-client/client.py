@@ -32,6 +32,8 @@ DEVICE_ID = os.getenv('DEVICE_ID', 'my-pc-001')
 DEVICE_PASSWORD = os.getenv('DEVICE_PASSWORD', 'relay123')
 IMAGE_QUALITY = int(os.getenv('IMAGE_QUALITY', 75))
 SCREEN_INTERVAL = float(os.getenv('SCREEN_INTERVAL', 0.1))
+PING_TIMEOUT = 30  # 心跳超时时间（秒）
+PING_INTERVAL = 10  # 心跳间隔（秒）
 
 # 日志
 logging.basicConfig(
@@ -204,7 +206,13 @@ async def main_loop():
         try:
             logger.info(f"尝试连接到服务器：{SERVER_URL}")
             
-            async with websockets.connect(SERVER_URL) as websocket:
+            # 使用更大的 ping 超时保持连接
+            async with websockets.connect(
+                SERVER_URL,
+                ping_timeout=PING_TIMEOUT,
+                ping_interval=PING_INTERVAL,
+                close_timeout=10
+            ) as websocket:
                 ws = websocket
                 client_connected = False
                 
@@ -226,6 +234,8 @@ async def main_loop():
                     print(f"   时间：{datetime.now()}")
                     print(f"\n等待控制客户端连接...\n")
                     
+                    client_connected = True
+                    
                     # 启动后台任务
                     screen_task = asyncio.create_task(screen_capture_loop())
                     info_task = asyncio.create_task(system_info_loop())
@@ -237,6 +247,7 @@ async def main_loop():
                     finally:
                         screen_task.cancel()
                         info_task.cancel()
+                        client_connected = False
                 else:
                     logger.error(f"设备注册失败：{data.get('message')}")
                     print(f"\n❌ 注册失败：{data.get('message')}\n")
