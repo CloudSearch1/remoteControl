@@ -27,13 +27,17 @@ except ImportError:
     HAS_PIL = False
     print("警告：Pillow 未安装，屏幕捕获功能受限")
 
-# 尝试导入 pyautogui
+# 尝试导入 pyautogui（需要 DISPLAY 环境）
+HAS_PYAUTOGUI = False
 try:
     import pyautogui
+    # 检查是否有 DISPLAY 环境（服务器可能没有）
+    if not os.environ.get('DISPLAY'):
+        print("提示：无 DISPLAY 环境，鼠标控制功能受限")
     HAS_PYAUTOGUI = True
-except ImportError:
-    HAS_PYAUTOGUI = False
-    print("警告：pyautogui 未安装，控制功能受限")
+except (ImportError, KeyError) as e:
+    print(f"提示：pyautogui 导入失败：{e}，控制功能受限")
+    print("提示：服务器无需控制功能，可忽略此警告")
 
 # 配置
 from dotenv import load_dotenv

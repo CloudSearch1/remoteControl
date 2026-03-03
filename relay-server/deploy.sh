@@ -18,21 +18,28 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-echo "[1/8] 更新系统..."
+echo "[1/8] 停止旧服务..."
+pkill -f "python server.py" || true
+sleep 2
+
+echo "[2/8] 更新系统..."
 apt update && apt upgrade -y
 
 echo "[2/8] 安装系统依赖..."
 apt install -y python3 python3-pip python3-venv git curl wget
 
-echo "[3/8] 克隆项目..."
+echo "[3/8] 停止旧服务..."
+pkill -f "python server.py" || true
+sleep 2
+
+echo "[4/8] 克隆项目..."
 cd /opt
 if [ -d "remoteControl" ]; then
-    echo "项目已存在，跳过克隆"
-    cd remoteControl/relay-server
-else
-    git clone git@github.com:CloudSearch1/remoteControl.git
-    cd remoteControl/relay-server
+    echo "项目已存在，删除旧版本"
+    rm -rf /opt/remoteControl
 fi
+git clone git@github.com:CloudSearch1/remoteControl.git
+cd remoteControl/relay-server
 
 echo "[4/8] 创建虚拟环境..."
 python3 -m venv venv
@@ -68,6 +75,8 @@ else
 fi
 
 echo "[8/8] 启动服务..."
+pkill -f "python server.py" || true
+sleep 2
 pkill -f "python server.py" || true
 sleep 2
 nohup python server.py > server.log 2>&1 &
